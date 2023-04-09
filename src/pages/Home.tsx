@@ -5,7 +5,7 @@ import { NavBar } from "../components/NavBar"
 export const Home = () => {
     return (
     <>
-        <DivLeft flex_position="sdasd">
+        <DivLeft flex_position="flex-col justify-between">
             <NavBar></NavBar>
         </DivLeft>
         <DivRight>

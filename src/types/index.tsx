@@ -10,8 +10,10 @@ export interface IButton {
 export interface IUserContext {
     login_register: boolean
     setlogin_register: (value: boolean) => void;
+    user: undefined | IUserResponse
     createUserSubmit: (value: IUserCreate) => void
     loginUserSubmit: (value: IUserLogin) => void
+    exitAccout: () => void
 }
 
 export interface IUserCreate {
@@ -23,6 +25,36 @@ export interface IUserCreate {
 export interface IUserLogin {
     email: string
     password: string
+}
+
+export interface IUserResponse {
+    id: string
+	fullName: string
+	email: string
+	password: string
+	isAdm: boolean,
+	created_at: Date
+	updated_at: Date
+	clients: Array<IClientResponse>
+}
+
+export interface IClientResponse {
+    
+    id: string
+    fullName: string
+    email: string
+    phone: string
+    created_at: Date
+    updated_at: Date
+    user: {
+        id: string
+        fullName: string
+        email: string
+        password: string
+        isAdm: boolean,
+        created_at: Date
+        updated_at: Date
+    }
 }
 
 export interface IDivLeft {
