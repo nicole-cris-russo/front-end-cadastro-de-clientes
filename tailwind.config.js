@@ -12,7 +12,8 @@ export default {
       "roxo": "#6d435a",
       "azul": "#7db2c6",
       "cinza": "#eae7d9",
-      "cinza-escuro": "#292524"
+      "cinza-escuro": "#292524",
+      "branco": "#fff"
     }
   },
   plugins: [],

@@ -9,16 +9,20 @@ export const UserContext = createContext<IUserContext>({
     login_register: false,
     setlogin_register: () => {},
     user: undefined,
+    button: "clients",
+    setButton: () => {},
     createUserSubmit: () => {},
     loginUserSubmit: () => {},
-    exitAccout: () => {}
+    exitAccout: () => {},
+    getToProfile: () => {}
 })
 
-export const UserProvider = ({children}: { children: ReactNode}) => {
+export const UserProvider = ({children}: { children: ReactNode }) => {
     const [login_register, setlogin_register] = useState<boolean>(false)
     const [user, setUser] = useState<IUserResponse>()
+    const [button, setButton] = useState<string>("listClients")
     const navigate = useNavigate()
-
+    
     const getToProfile = () => {
         const token = localStorage.getItem("@token")
         const tokenParse = JSON.parse(token!)
@@ -28,7 +32,6 @@ export const UserProvider = ({children}: { children: ReactNode}) => {
             }
         }).then((response) => {
             setUser(response.data)
-            navigate("/home", {replace: true})
         }).catch((error) => {
             console.log(error)
         })
@@ -36,11 +39,25 @@ export const UserProvider = ({children}: { children: ReactNode}) => {
 
     useEffect(() => {
         const token = localStorage.getItem("@token")
-        token && getToProfile()
-    }, [])
+        const tokenParse = JSON.parse(token!)
+        
+        if (tokenParse) {
+            api.get("user/profile", {
+                headers: {
+                    Authorization: tokenParse
+                }
+            }).then((response) => {
+                setUser(response.data)
+                navigate("/home", { replace: true })
+            }).catch((error) => {
+                console.log(error)
+            })
+        } else {
+            navigate("/login", { replace: true })
+        }
+    }, [navigate, setUser]) 
 
     const createUserSubmit = (data: IUserCreate) => {
-        console.log(data)
         api.post("user", data)
         .then((response) => { 
             toast.success("Cadastrado! Faça o login.")
@@ -55,6 +72,7 @@ export const UserProvider = ({children}: { children: ReactNode}) => {
         .then((response) => {
             localStorage.setItem("@token", JSON.stringify(response.data.token))
             getToProfile()
+            navigate("/home", {replace: true})
             toast.success("Bem vindo(a)!")
         })
         .catch((error) => {
@@ -69,7 +87,7 @@ export const UserProvider = ({children}: { children: ReactNode}) => {
 
 
     return (
-        <UserContext.Provider value={{login_register, setlogin_register, createUserSubmit, loginUserSubmit, user, exitAccout}}>
+        <UserContext.Provider value={{login_register, setlogin_register, createUserSubmit, loginUserSubmit, user, exitAccout, getToProfile, button, setButton}}>
             {children}
         </UserContext.Provider>
     )
