@@ -8,7 +8,9 @@ export const ClientContext = createContext<IClientContext>({
     modal: false,
     setModal: () => {},
     clients: undefined,
-    deleteClient: () => {}
+    setClients: () => {},
+    deleteClient: () => {},
+    listClients: () => {}
 })
 
 export const ClientProvider = ({children}: {children: ReactNode}) => {
@@ -62,7 +64,7 @@ export const ClientProvider = ({children}: {children: ReactNode}) => {
     useEffect(() => {listClients()}, [createClient, setClients])
 
     return (
-        <ClientContext.Provider value={{createClient, modal, setModal, clients, deleteClient}}>
+        <ClientContext.Provider value={{createClient, modal, setModal, clients, setClients, deleteClient, listClients}}>
             {children}
         </ClientContext.Provider>
     )

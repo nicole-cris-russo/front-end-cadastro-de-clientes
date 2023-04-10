@@ -17,7 +17,9 @@ export interface IClientContext {
     modal: boolean
     setModal: (value: boolean) => void
     clients: undefined | IClientResponse[]
+    setClients: (value: IClientResponse[]) => void
     deleteClient: (value: string) => void
+    listClients: () => void
 }
 
 export interface IClientCreate {

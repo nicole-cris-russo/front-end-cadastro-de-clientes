@@ -1,9 +1,10 @@
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode, useContext, useEffect, useState } from "react"
 import { createContext } from "react";
 import { IUserContext, IUserCreate, IUserLogin, IUserResponse } from "../types"
 import { api } from "../service";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { ClientContext } from "./ClientContext";
 
 export const UserContext = createContext<IUserContext>({
     login_register: false,
@@ -22,6 +23,7 @@ export const UserProvider = ({children}: { children: ReactNode }) => {
     const [user, setUser] = useState<IUserResponse>()
     const [button, setButton] = useState<string>("listClients")
     const navigate = useNavigate()
+    const { setClients, listClients, createClient } = useContext(ClientContext)
     
     const getToProfile = () => {
         const token = localStorage.getItem("@token")
@@ -36,27 +38,7 @@ export const UserProvider = ({children}: { children: ReactNode }) => {
             console.log(error)
         })
     }
-
-    useEffect(() => {
-        const token = localStorage.getItem("@token")
-        const tokenParse = JSON.parse(token!)
-        
-        if (tokenParse) {
-            api.get("user/profile", {
-                headers: {
-                    Authorization: tokenParse
-                }
-            }).then((response) => {
-                setUser(response.data)
-                navigate("/home", { replace: true })
-            }).catch((error) => {
-                console.log(error)
-            })
-        } else {
-            navigate("/login", { replace: true })
-        }
-    }, [navigate, setUser]) 
-
+    
     const createUserSubmit = (data: IUserCreate) => {
         api.post("user", data)
         .then((response) => { 
@@ -82,9 +64,29 @@ export const UserProvider = ({children}: { children: ReactNode }) => {
 
     const exitAccout = () => {
         localStorage.removeItem("@token")
+        setClients([])
         navigate("/login", {replace: true})
     }
-
+    
+    useEffect(() => {
+        const token = localStorage.getItem("@token")
+        const tokenParse = JSON.parse(token!)
+        if (tokenParse) {
+            api.get("user/profile", {
+                headers: {
+                    Authorization: tokenParse
+                }
+            }).then((response) => {
+                setUser(response.data)
+                navigate("/home", { replace: true })
+            }).catch((error) => {
+                console.log(error)
+            })
+        } else {
+            navigate("/login", { replace: true })
+        }
+        listClients()
+    }, [setUser]) 
 
     return (
         <UserContext.Provider value={{login_register, setlogin_register, createUserSubmit, loginUserSubmit, user, exitAccout, getToProfile, button, setButton}}>
